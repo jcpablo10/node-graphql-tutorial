@@ -4,11 +4,15 @@
   "description": "GraphQL exercise",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "serve": "node app.js"
   },
   "keywords": [
     "GraphQL"
   ],
   "author": "jeici",
-  "license": "MIT"
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.17.2"
+  }
 }
