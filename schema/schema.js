@@ -2,7 +2,8 @@
 // Route query s allows o describe this connections
 
 const graphql = require('graphql');
-const _ = require('lodash')
+const _ = require('lodash');
+const { resolve } = require('path/posix');
 
 const usersData = [
   {id: "1", name:"Draymond Green", age: 35, profession: "Doctor"},
@@ -127,6 +128,59 @@ const RootQuery = new GraphQLObjectType({
   }
 });
 
+const Mutation = new GraphQLObjectType({
+  name: "Mutation",
+  fields: {
+    createUser: {
+      type: UserType,
+      args: {
+        name: { type: GraphQLString },
+        age: { type: GraphQLInt },
+        profession: { type: GraphQLString }
+      },
+      resolve(parent, args){
+        let user = {
+          name: args.name,
+          age: args.age,
+          profession: args.profession
+        }
+        return user;
+      }
+    },
+    createPost: {
+      type: PostType,
+      args: {
+        comment: { type: GraphQLString },
+        userId: {type: GraphQLID }
+      },
+      resolve(parent, args){
+        let post = {
+          comment: args.comment,
+          userId: args.userId
+        }
+        return post;
+      }
+    },
+    createHobby: {
+      type: HobbyType,
+      args: {
+        title: { type: GraphQLString },
+        description: { type: GraphQLString },
+        userId: { type: GraphQLID }
+      },
+      resolve(parent, args){
+        let hobbie = {
+          title: args.title,
+          description: args.description,
+          userId: args.userId
+        }
+        return hobbie;
+      },
+    },
+  }
+});
+
 module.exports = new GraphQLSchema({
-  query: RootQuery
+  query: RootQuery,
+  mutation: Mutation
 });
