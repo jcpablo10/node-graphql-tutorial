@@ -14,17 +14,19 @@ const usersData = [
 ];
 
 const hobbiesData = [
-  {id: '1', title: 'Swimming', description: 'Swimming is an individual or team racing sport that requires the use of one`s entire body to move through water. '},
-  {id: '2', title: 'Taekwondo', description: 'Taekwondo, Tae Kwon Do or Taekwon-Do is a Korean form of martial arts, characterized by punching and kicking techniques'},
-  {id: '3', title: 'Hiking', description: 'Hiking is a long, vigorous walk, usually on trails or footpaths in the countryside.'},
-  {id: '4', title: 'Graffiti', description: 'Se llama grafiti, ​grafito​o pintada ​​ a una modalidad de pintura libre, destacada por su ilegalidad, generalmente realizada en espacios urbanos.'},
-  {id: '5', title: 'Ghost hunting', description: 'Ghost hunting is the process of investigating locations that are reported to be haunted by ghosts.'},
+  {id: '1', title: 'Swimming', description: 'Swimming is an individual or team racing sport that requires the use of one`s entire body to move through water. ', userId: "1"},
+  {id: '2', title: 'Taekwondo', description: 'Taekwondo, Tae Kwon Do or Taekwon-Do is a Korean form of martial arts, characterized by punching and kicking techniques', userId: "1"},
+  {id: '3', title: 'Hiking', description: 'Hiking is a long, vigorous walk, usually on trails or footpaths in the countryside.', userId: "2"},
+  {id: '4', title: 'Graffiti', description: 'Se llama grafiti, ​grafito​o pintada ​​ a una modalidad de pintura libre, destacada por su ilegalidad, generalmente realizada en espacios urbanos.', userId: "3"},
+  {id: '5', title: 'Ghost hunting', description: 'Ghost hunting is the process of investigating locations that are reported to be haunted by ghosts.', userId: "4"},
 ];
 
 const postData = [
-  {id: "1", comment: "Building a mind"},
-  {id: "2", comment: "GraphQl is Amazing"},
-  {id: "3", comment: "How to change the world"},
+  {id: "1", comment: "Building a mind", userId: "1"},
+  {id: "2", comment: "GraphQl is Amazing", userId: "1"},
+  {id: "3", comment: "How to change the world", userId: "2"},
+  {id: "4", comment: "How to change the world", userId: "3"},
+  {id: "5", comment: "How to change the world", userId: "5"},
 ];
 
 const {
@@ -32,7 +34,8 @@ const {
   GraphQLID,
   GraphQLString,
   GraphQLInt,
-  GraphQLSchema
+  GraphQLSchema,
+  GraphQLList
 } = graphql;
 
 // Create types
@@ -44,7 +47,21 @@ const UserType = new graphql.GraphQLObjectType({
     id: { type: GraphQLID },
     name: { type: GraphQLString },
     age: { type: GraphQLInt },
-    profession: {type: GraphQLString}
+    profession: {type: GraphQLString},
+    posts: {
+      type: new GraphQLList(PostType),
+      description: "All post for a user given",
+      resolve(parent, args) {
+        return _.filter(postData, {userId: parent.id});
+      }
+    },
+    hobbies: {
+      type: new GraphQLList(HobbyType),
+      description: "All hobbies for a user given",
+      resolve(parent, args) {
+        return _.filter(hobbiesData, {userId: parent.id});
+      }
+    },
   })
 });
 
@@ -54,7 +71,13 @@ const HobbyType = new graphql.GraphQLObjectType({
   fields: () => ({
     id: { type: GraphQLID },
     title: { type: GraphQLString },
-    description: { type: GraphQLString }
+    description: { type: GraphQLString },
+    user: {
+      type: UserType,
+      resolve(parent, args) {
+        return _.find(usersData, {id: parent.userId});
+      }
+    }
   })
 });
 
@@ -63,7 +86,14 @@ const PostType = new GraphQLObjectType({
   description: 'Post Description type...',
   fields: () => ({
     id: {type: GraphQLID},
-    comment: {type: GraphQLString}
+    comment: {type: GraphQLString},
+    user: {
+      type: UserType,
+      resolve(parent, args) {
+        console.log(parent)
+        return _.find(usersData, {id: parent.userId});
+      }
+    }
   }),
 });
 
